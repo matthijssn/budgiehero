@@ -1,49 +1,61 @@
-# render.yaml — BudgieHero (T + P in één Blueprint)
-# Vereist: dit bestand moet in de repo-root staan en exact 'render.yaml' heten.  # (Render Blueprints) [1](https://community.vercel.com/t/hobby-plan-suspended-because-of-unfiltered-bot-activity/15596)
+# render.yaml — BudgieHero (Test + Prod + EnvVarGroups)
 
-# ---------------------------
-# DRY anchors voor API/Worker
-# ---------------------------
+# ------- DRY anchors (monorepo) -------
 x-api-base: &api_base
-  env: docker
-  rootDir: apps/api               # Monorepo: bouw context voor API                 [2](https://community.vercel.com/t/blob-limit-on-hobby-plan/5760)
+  type: web
+  runtime: docker            # i.p.v. 'env: docker'
+  rootDir: apps/api          # monorepo: build context
   region: frankfurt
   plan: starter
   healthCheckPath: /health
   envVars:
     - key: NODE_ENV
       value: production
-    - key: JWT_SECRET
-      sync: false                 # in UI per service zetten
-    - key: FRONTEND_ORIGIN
-      sync: false
-    - key: MONGODB_URI
-      sync: false
-    - key: GOOGLE_CLIENT_ID
-      sync: false
-    - key: GOOGLE_CLIENT_SECRET
-      sync: false
-    - key: OIDC_REDIRECT_URI
-      sync: false
-    # REDIS_URL wordt per omgeving via fromService overschreven
-
 x-worker-base: &worker_base
-  env: docker
-  rootDir: apps/worker            # Monorepo: bouw context voor Worker              [2](https://community.vercel.com/t/blob-limit-on-hobby-plan/5760)
+  type: worker
+  runtime: docker
+  rootDir: apps/worker
   region: frankfurt
   plan: starter
   envVars:
     - key: NODE_ENV
       value: production
-    - key: MONGODB_URI
-      sync: false
-    # REDIS_URL wordt per omgeving via fromService overschreven
 
-# -------------
-# Services (IaC)
-# -------------
+# ------- EnvVarGroups (secrets/vars per omgeving) -------
+envVarGroups:
+  - name: budgiehero-secrets-test
+    envVars:
+      - key: JWT_SECRET
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: OIDC_REDIRECT_URI
+        sync: false
+      - key: MONGODB_URI
+        sync: false
+      - key: FRONTEND_ORIGIN
+        value: https://budgiehero-web-test.vercel.app
+
+  - name: budgiehero-secrets-prod
+    envVars:
+      - key: JWT_SECRET
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: OIDC_REDIRECT_URI
+        sync: false
+      - key: MONGODB_URI
+        sync: false
+      - key: FRONTEND_ORIGIN
+        value: https://budgiehero.app
+
+# ------- Services (Test + Prod) -------
 services:
-  # ========= TEST =========
+  # === TEST ===
   - name: budgiehero-redis-test
     type: redis
     plan: starter
@@ -51,28 +63,25 @@ services:
 
   - name: budgiehero-api-test
     <<: *api_base
-    # Autodeploy: AAN (configureer in UI of laat default aan)              [3](https://www.mongodb.com/products/platform/atlas-cloud-providers/aws/pricing)
     envVars:
-      - key: FRONTEND_ORIGIN
-        value: https://budgiehero-web-test.vercel.app
-      - key: MONGODB_URI
-        value: ${MONGODB_URI_T}   # zet in UI of via Env Var Group
-      - key: REDIS_URL
+      - fromGroup: budgiehero-secrets-test     # koppel EnvVarGroup (gedocumenteerd patroon)
+      - key: REDIS_URL                         # Redis-URL rechtstreeks uit de service
         fromService:
           type: redis
           name: budgiehero-redis-test
+          property: connectionString
 
   - name: budgiehero-worker-test
     <<: *worker_base
     envVars:
-      - key: MONGODB_URI
-        value: ${MONGODB_URI_T}
+      - fromGroup: budgiehero-secrets-test
       - key: REDIS_URL
         fromService:
           type: redis
           name: budgiehero-redis-test
+          property: connectionString
 
-  # ========= PROD =========
+  # === PROD ===
   - name: budgiehero-redis-prod
     type: redis
     plan: standard
@@ -81,24 +90,22 @@ services:
   - name: budgiehero-api-prod
     <<: *api_base
     plan: standard
-    # Autodeploy: UIT (in UI uitzetten) — deployen via Deploy Hook/handmatig       [3](https://www.mongodb.com/products/platform/atlas-cloud-providers/aws/pricing)
+    # Zet autodeploy UIT in de service-instellingen; Prod deployen via Deploy Hook of handmatig.
     envVars:
-      - key: FRONTEND_ORIGIN
-        value: https://budgiehero.app
-      - key: MONGODB_URI
-        value: ${MONGODB_URI_P}
+      - fromGroup: budgiehero-secrets-prod
       - key: REDIS_URL
         fromService:
           type: redis
           name: budgiehero-redis-prod
+          property: connectionString
 
   - name: budgiehero-worker-prod
     <<: *worker_base
     plan: standard
     envVars:
-      - key: MONGODB_URI
-        value: ${MONGODB_URI_P}
+      - fromGroup: budgiehero-secrets-prod
       - key: REDIS_URL
         fromService:
           type: redis
           name: budgiehero-redis-prod
+          property: connectionString
