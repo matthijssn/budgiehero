@@ -1,0 +1,50 @@
+
+name: Deploy Test (T)
+
+on:
+  push:
+    branches: [ develop ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  deployments: write
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_TEST }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: test
+    steps:
+      - uses: actions/checkout@v4
+
+      # Build web with injected API_URL
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci --workspaces
+      - name: Inject API_URL into web config
+        run: |
+          export API_URL=${{ secrets.API_URL_TEST }}
+          bash apps/web/scripts/inject-config.sh "$API_URL"
+      - run: npm run build -w apps/web
+
+      # Deploy web to Vercel (Test project)
+      - name: Vercel Deploy
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-args: '--prod'
+          working-directory: apps/web
+          scope: ${{ secrets.VERCEL_ORG_ID }}
+
+      # Trigger Render deploys via Deploy Hooks (API & Worker)
+      - name: Deploy API (Render Test)
+        run: |
+          curl -s -X POST "${{ secrets.RENDER_TEST_API_HOOK }}" || true
+      - name: Deploy Worker (Render Test)
+        run: |
+          curl -s -X POST "${{ secrets.RENDER_TEST_WORKER_HOOK }}" || true
