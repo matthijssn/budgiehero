@@ -1,8 +1,5 @@
-# render.yaml — BudgieHero (Test + Prod + EnvVarGroups), zonder custom anchors
+# render.yaml — BudgieHero (Test + Prod + EnvVarGroups)
 
-# -------------------------
-# EnvVarGroups per omgeving
-# -------------------------
 envVarGroups:
   - name: budgiehero-secrets-test
     envVars:
@@ -15,7 +12,7 @@ envVarGroups:
       - key: OIDC_REDIRECT_URI
         sync: false
       - key: MONGODB_URI
-        sync: false            # waarde in Render UI (TEST)
+        sync: false
       - key: FRONTEND_ORIGIN
         value: https://budgiehero-web-test.vercel.app
 
@@ -30,19 +27,18 @@ envVarGroups:
       - key: OIDC_REDIRECT_URI
         sync: false
       - key: MONGODB_URI
-        sync: false            # waarde in Render UI (PROD)
+        sync: false
       - key: FRONTEND_ORIGIN
         value: https://budgiehero.app
 
-# --------------
-# Services (T+P)
-# --------------
 services:
   # ========== TEST ==========
   - name: budgiehero-redis-test
     type: redis
     plan: starter
     region: frankfurt
+    # ▼ Vereist door blueprint schema voor Key Value
+    ipAllowList: []         # Alleen interne verbindingen; extern = geblokkeerd  [1](https://www.mongodb.com/docs/atlas/billing/serverless-instance-costs/)[2](https://vercel.com/pricing)
 
   - name: budgiehero-api-test
     type: web
@@ -82,6 +78,8 @@ services:
     type: redis
     plan: standard
     region: frankfurt
+    # ▼ Vereist: specificeer allow list; leeg = intern‑only
+    ipAllowList: []         # Verhoog veiligheid; extern alleen indien nodig      [1](https://www.mongodb.com/docs/atlas/billing/serverless-instance-costs/)
 
   - name: budgiehero-api-prod
     type: web
@@ -90,7 +88,7 @@ services:
     region: frankfurt
     plan: standard
     healthCheckPath: /health
-    # Zet autodeploy UIT in de service-instellingen (Prod via Deploy Hook/handmatig). [6](https://rebusfarm.net/blog/top-five-render-farms)
+    # Zet autodeploy UIT in de service-instellingen; Prod via Deploy Hook/handmatig  [3](https://rebusfarm.net/blog/top-five-render-farms)
     envVars:
       - key: NODE_ENV
         value: production
