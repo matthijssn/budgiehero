@@ -1,27 +1,8 @@
-# render.yaml — BudgieHero (Test + Prod + EnvVarGroups)
+# render.yaml — BudgieHero (Test + Prod + EnvVarGroups), zonder custom anchors
 
-# ------- DRY anchors (monorepo) -------
-x-api-base: &api_base
-  type: web
-  runtime: docker            # i.p.v. 'env: docker'
-  rootDir: apps/api          # monorepo: build context
-  region: frankfurt
-  plan: starter
-  healthCheckPath: /health
-  envVars:
-    - key: NODE_ENV
-      value: production
-x-worker-base: &worker_base
-  type: worker
-  runtime: docker
-  rootDir: apps/worker
-  region: frankfurt
-  plan: starter
-  envVars:
-    - key: NODE_ENV
-      value: production
-
-# ------- EnvVarGroups (secrets/vars per omgeving) -------
+# -------------------------
+# EnvVarGroups per omgeving
+# -------------------------
 envVarGroups:
   - name: budgiehero-secrets-test
     envVars:
@@ -34,7 +15,7 @@ envVarGroups:
       - key: OIDC_REDIRECT_URI
         sync: false
       - key: MONGODB_URI
-        sync: false
+        sync: false            # waarde in Render UI (TEST)
       - key: FRONTEND_ORIGIN
         value: https://budgiehero-web-test.vercel.app
 
@@ -49,31 +30,30 @@ envVarGroups:
       - key: OIDC_REDIRECT_URI
         sync: false
       - key: MONGODB_URI
-        sync: false
+        sync: false            # waarde in Render UI (PROD)
       - key: FRONTEND_ORIGIN
         value: https://budgiehero.app
 
-# ------- Services (Test + Prod) -------
+# --------------
+# Services (T+P)
+# --------------
 services:
-  # === TEST ===
+  # ========== TEST ==========
   - name: budgiehero-redis-test
     type: redis
     plan: starter
     region: frankfurt
 
   - name: budgiehero-api-test
-    <<: *api_base
+    type: web
+    runtime: docker
+    rootDir: apps/api
+    region: frankfurt
+    plan: starter
+    healthCheckPath: /health
     envVars:
-      - fromGroup: budgiehero-secrets-test     # koppel EnvVarGroup (gedocumenteerd patroon)
-      - key: REDIS_URL                         # Redis-URL rechtstreeks uit de service
-        fromService:
-          type: redis
-          name: budgiehero-redis-test
-          property: connectionString
-
-  - name: budgiehero-worker-test
-    <<: *worker_base
-    envVars:
+      - key: NODE_ENV
+        value: production
       - fromGroup: budgiehero-secrets-test
       - key: REDIS_URL
         fromService:
@@ -81,17 +61,39 @@ services:
           name: budgiehero-redis-test
           property: connectionString
 
-  # === PROD ===
+  - name: budgiehero-worker-test
+    type: worker
+    runtime: docker
+    rootDir: apps/worker
+    region: frankfurt
+    plan: starter
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - fromGroup: budgiehero-secrets-test
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: budgiehero-redis-test
+          property: connectionString
+
+  # ========== PROD ==========
   - name: budgiehero-redis-prod
     type: redis
     plan: standard
     region: frankfurt
 
   - name: budgiehero-api-prod
-    <<: *api_base
+    type: web
+    runtime: docker
+    rootDir: apps/api
+    region: frankfurt
     plan: standard
-    # Zet autodeploy UIT in de service-instellingen; Prod deployen via Deploy Hook of handmatig.
+    healthCheckPath: /health
+    # Zet autodeploy UIT in de service-instellingen (Prod via Deploy Hook/handmatig). [6](https://rebusfarm.net/blog/top-five-render-farms)
     envVars:
+      - key: NODE_ENV
+        value: production
       - fromGroup: budgiehero-secrets-prod
       - key: REDIS_URL
         fromService:
@@ -100,9 +102,14 @@ services:
           property: connectionString
 
   - name: budgiehero-worker-prod
-    <<: *worker_base
+    type: worker
+    runtime: docker
+    rootDir: apps/worker
+    region: frankfurt
     plan: standard
     envVars:
+      - key: NODE_ENV
+        value: production
       - fromGroup: budgiehero-secrets-prod
       - key: REDIS_URL
         fromService:
