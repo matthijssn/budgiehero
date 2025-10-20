@@ -1,8 +1,11 @@
 
-import { Issuer, generators, Client } from 'openid-client';
+import { Issuer, generators } from 'openid-client';
 
-let clientPromise: Promise<Client> | null = null;
-export async function getGoogleClient(): Promise<Client> {
+
+
+let clientPromise: Promise<any> | null = null;
+
+export async function getGoogleClient(): Promise<any> {
   if (!clientPromise) {
     clientPromise = (async () => {
       const google = await Issuer.discover('https://accounts.google.com');

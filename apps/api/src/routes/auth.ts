@@ -25,17 +25,25 @@ auth.get('/google/callback', async (req, res) => {
   const claims = tokenSet.claims();
   const email = claims.email as string;
   const name = claims.name as string | undefined;
-  const sub = claims.sub as string;
+  const sub = claims.sub as string | undefined;
 
   if (!email) return res.status(400).send('No email in claims');
 
   const user = await User.findOneAndUpdate(
     { email },
-    { name, provider: 'google', providerId: sub, picture: (claims.picture as string)|undefined },
+    { name: name ?? undefined,
+      provider: 'google', 
+      providerId: sub, 
+      picture: (claims as any).picture || undefined 
+    },
     { new: true, upsert: true }
   );
 
-  const jwt = signSession({ userId: user._id.toString(), email: user.email, name: user.name });
+  
+  const nameForSession = typeof user.name === 'string' && user.name.trim() ? user.name : undefined;
+
+
+  const jwt = signSession({ userId: user._id.toString(), email: user.email, name: nameForSession });
   const cookieOpts = {
     httpOnly: true,
     secure: true,

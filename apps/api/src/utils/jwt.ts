@@ -1,13 +1,22 @@
 
-import jwt from 'jsonwebtoken';
+import jwt, { Secret, SignOptions } from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret_change_me';
+const JWT_SECRET : Secret = process.env.JWT_SECRET || 'dev_secret_change_me';
 
 export type SessionPayload = { userId: string; email: string; name?: string };
 
-export function signSession(payload: SessionPayload, expiresIn = '7d') {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn });
+type Expires = SignOptions['expiresIn'];  // => number | StringValue | undefined
+
+
+export function signSession(
+  payload: SessionPayload,
+  expiresIn: Expires = '7d' // '7d' is compatibel met StringValue
+) {
+  const opts: SignOptions = {};
+  if (expiresIn !== undefined) opts.expiresIn = expiresIn;
+  return jwt.sign(payload, JWT_SECRET, opts);
 }
+
 
 export function verifySession(token: string): SessionPayload {
   return jwt.verify(token, JWT_SECRET) as SessionPayload;

@@ -1,3 +1,6 @@
+import { parse } from 'csv-parse/sync';
+import { categorize } from '../lib/categorize';
+
 import { Router, Request, Response } from 'express';
 import { z } from 'zod';
 import { Transaction } from '../models/Transaction';
@@ -62,8 +65,7 @@ async function inlineParseAndInsertCSV(userId: string, csv: string) {
 async function inlineCategorizeRecent(userId: string, limit = 500) {
   // Categoriseer de meest recente nog-ongelabelde transacties van deze user
   // (zowel net ingevoerde als eerder geïmporteerde)
-  const { categorize } = await import('../../../packages/shared/src/categorize');
-
+ 
   const batch = await Transaction.find({
     userId,
     $or: [{ category: { $exists: false } }, { category: null }, { category: '' }],
@@ -72,7 +74,7 @@ async function inlineCategorizeRecent(userId: string, limit = 500) {
     .limit(limit);
 
   for (const tx of batch) {
-    const { category, confidence } = categorize({ description: tx.description, amount: tx.amount });
+    const { category, confidence } = categorize({ description: tx.description || "", amount: tx.amount });
     (tx as any).category = category;
     (tx as any).confidence = confidence;
     await tx.save();
@@ -136,8 +138,8 @@ router.post('/', async (req: Request, res: Response) => {
 
     // Inline categorisatie (ook in gratis setup handig)
     try {
-      const { categorize } = await import('../../../packages/shared/src/categorize');
-      const { category, confidence } = categorize({ description: tx.description, amount: tx.amount });
+      const { categorize } = await import('../lib/categorize');
+      const { category, confidence } = categorize({ description: tx.description || "", amount: tx.amount });
       (tx as any).category = category;
       (tx as any).confidence = confidence;
       await tx.save();
