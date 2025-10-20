@@ -1,8 +1,12 @@
-# render.yaml — BudgieHero (Test + Prod + EnvVarGroups)
+# render.yaml — BudgieHero (Gratis setup: Web + Key Value, Test & Prod)
 
+# -------------------------
+# EnvVarGroups per omgeving
+# -------------------------
 envVarGroups:
   - name: budgiehero-secrets-test
     envVars:
+      # App / OAuth
       - key: JWT_SECRET
         sync: false
       - key: GOOGLE_CLIENT_ID
@@ -11,8 +15,10 @@ envVarGroups:
         sync: false
       - key: OIDC_REDIRECT_URI
         sync: false
+      # Data: Mongo Atlas (extern, free tier) of straks Postgres
       - key: MONGODB_URI
         sync: false
+      # Frontend URL (Test)
       - key: FRONTEND_ORIGIN
         value: https://budgiehero-web-test.vercel.app
 
@@ -31,21 +37,22 @@ envVarGroups:
       - key: FRONTEND_ORIGIN
         value: https://budgiehero.app
 
+# --------------
+# Services (T+P)
+# --------------
 services:
-  # ========== TEST ==========
+  # ======= TEST (gratis) =======
   - name: budgiehero-redis-test
     type: redis
-    plan: starter
+    plan: free                  # GRATIS Key Value instance
     region: frankfurt
-    # ▼ Vereist door blueprint schema voor Key Value
-    ipAllowList: []         # Alleen interne verbindingen; extern = geblokkeerd  [1](https://www.mongodb.com/docs/atlas/billing/serverless-instance-costs/)[2](https://vercel.com/pricing)
-
+    ipAllowList: []             # intern-only (vereist door schema)  # ← veilig en gratis
   - name: budgiehero-api-test
     type: web
     runtime: docker
     rootDir: apps/api
     region: frankfurt
-    plan: starter
+    plan: free                  # GRATIS Web Service
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
@@ -57,54 +64,20 @@ services:
           name: budgiehero-redis-test
           property: connectionString
 
-  - name: budgiehero-worker-test
-    type: worker
-    runtime: docker
-    rootDir: apps/worker
-    region: frankfurt
-    plan: starter
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - fromGroup: budgiehero-secrets-test
-      - key: REDIS_URL
-        fromService:
-          type: redis
-          name: budgiehero-redis-test
-          property: connectionString
-
-  # ========== PROD ==========
+  # ======= PROD (gratis) =======
   - name: budgiehero-redis-prod
     type: redis
-    plan: standard
+    plan: free
     region: frankfurt
-    # ▼ Vereist: specificeer allow list; leeg = intern‑only
-    ipAllowList: []         # Verhoog veiligheid; extern alleen indien nodig      [1](https://www.mongodb.com/docs/atlas/billing/serverless-instance-costs/)
-
+    ipAllowList: []             # intern-only
   - name: budgiehero-api-prod
     type: web
     runtime: docker
     rootDir: apps/api
     region: frankfurt
-    plan: standard
+    plan: free
     healthCheckPath: /health
-    # Zet autodeploy UIT in de service-instellingen; Prod via Deploy Hook/handmatig  [3](https://rebusfarm.net/blog/top-five-render-farms)
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - fromGroup: budgiehero-secrets-prod
-      - key: REDIS_URL
-        fromService:
-          type: redis
-          name: budgiehero-redis-prod
-          property: connectionString
-
-  - name: budgiehero-worker-prod
-    type: worker
-    runtime: docker
-    rootDir: apps/worker
-    region: frankfurt
-    plan: standard
+    # Zet autodeploy UIT in de service-instellingen als je production niet automatisch wilt.
     envVars:
       - key: NODE_ENV
         value: production
