@@ -167,4 +167,3 @@ services:
         value: mongodb+srv://budgiehero_user:NczvUblCuPjcASwH@cluster0.ljvd4r7.mongodb.net/budgiehero/notification?retryWrites=true&w=majority&appName=Cluster0
     autoDeploy: true
     healthCheckPath: /notification/health
-``
