@@ -11,6 +11,12 @@ app.use(express.json());
 // Auth routes inclusief beveiligde endpoint
 app.use('/auth', authRoutes);
 
+
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', service: 'auth-service' });
+});
+
+
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error(err));
