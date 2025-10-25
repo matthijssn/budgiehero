@@ -12,7 +12,7 @@ services:
       - key: PORT
         value: 5000
       - key: MONGO_URI
-        value: mongodb+srv://budgiehero_user:NczvUblCuPjcASwH@cluster0.ljvd4r7.mongodb.net/budgiehero/auth-test?retryWrites=true&w=majority&appName=Cluster0
+        value: mongodb+srv://budgiehero_user:NczvUblCuPjcASwH@cluster0.ljvd4r7.mongodb.net/budgiehero-test?retryWrites=true&w=majority&appName=Cluster0
       - key: JWT_SECRET
         value: test_secret_key
     autoDeploy: true
@@ -30,7 +30,7 @@ services:
       - key: PORT
         value: 5000
       - key: MONGO_URI
-        value: mongodb+srv://budgiehero_user:NczvUblCuPjcASwH@cluster0.ljvd4r7.mongodb.net/budgiehero/auth?retryWrites=true&w=majority&appName=Cluster0
+        value: mongodb+srv://budgiehero_user:NczvUblCuPjcASwH@cluster0.ljvd4r7.mongodb.net/budgiehero?retryWrites=true&w=majority&appName=Cluster0
       - key: JWT_SECRET
         value: prod_secret_key
     autoDeploy: true
@@ -49,7 +49,7 @@ services:
       - key: PORT
         value: 5001
       - key: MONGO_URI
-        value: mongodb+srv://budgiehero_user:NczvUblCuPjcASwH@cluster0.ljvd4r7.mongodb.net/budgiehero/budget-test?retryWrites=true&w=majority&appName=Cluster0
+        value: mongodb+srv://budgiehero_user:NczvUblCuPjcASwH@cluster0.ljvd4r7.mongodb.net/budgiehero-test?retryWrites=true&w=majority&appName=Cluster0
     autoDeploy: true
     healthCheckPath: /budget/health
 
@@ -65,7 +65,7 @@ services:
       - key: PORT
         value: 5001
       - key: MONGO_URI
-        value: mongodb+srv://budgiehero_user:NczvUblCuPjcASwH@cluster0.ljvd4r7.mongodb.net/budgiehero/budget?retryWrites=true&w=majority&appName=Cluster0
+        value: mongodb+srv://budgiehero_user:NczvUblCuPjcASwH@cluster0.ljvd4r7.mongodb.net/budgiehero?retryWrites=true&w=majority&appName=Cluster0
     autoDeploy: true
     healthCheckPath: /budget/health
 
@@ -82,7 +82,7 @@ services:
       - key: PORT
         value: 5002
       - key: MONGO_URI
-        value: mongodb+srv://budgiehero_user:NczvUblCuPjcASwH@cluster0.ljvd4r7.mongodb.net/budgiehero/transaction-test?retryWrites=true&w=majority&appName=Cluster0
+        value: mongodb+srv://budgiehero_user:NczvUblCuPjcASwH@cluster0.ljvd4r7.mongodb.net/budgiehero-test?retryWrites=true&w=majority&appName=Cluster0
     autoDeploy: true
     healthCheckPath: /transaction/health
 
@@ -98,7 +98,7 @@ services:
       - key: PORT
         value: 5002
       - key: MONGO_URI
-        value: mongodb+srv://budgiehero_user:NczvUblCuPjcASwH@cluster0.ljvd4r7.mongodb.net/budgiehero/transaction?retryWrites=true&w=majority&appName=Cluster0
+        value: mongodb+srv://budgiehero_user:NczvUblCuPjcASwH@cluster0.ljvd4r7.mongodb.net/budgiehero?retryWrites=true&w=majority&appName=Cluster0
     autoDeploy: true
     healthCheckPath: /transaction/health
 
@@ -115,7 +115,7 @@ services:
       - key: PORT
         value: 5003
       - key: MONGO_URI
-        value: mongodb+srv://budgiehero_user:NczvUblCuPjcASwH@cluster0.ljvd4r7.mongodb.net/budgiehero/reporting-test?retryWrites=true&w=majority&appName=Cluster0
+        value: mongodb+srv://budgiehero_user:NczvUblCuPjcASwH@cluster0.ljvd4r7.mongodb.net/budgiehero-test?retryWrites=true&w=majority&appName=Cluster0
     autoDeploy: true
     healthCheckPath: /reporting/health
 
@@ -131,7 +131,7 @@ services:
       - key: PORT
         value: 5003
       - key: MONGO_URI
-        value: mongodb+srv://budgiehero_user:NczvUblCuPjcASwH@cluster0.ljvd4r7.mongodb.net/budgiehero/reporting?retryWrites=true&w=majority&appName=Cluster0
+        value: mongodb+srv://budgiehero_user:NczvUblCuPjcASwH@cluster0.ljvd4r7.mongodb.net/budgiehero?retryWrites=true&w=majority&appName=Cluster0
     autoDeploy: true
     healthCheckPath: /reporting/health
 
@@ -148,7 +148,7 @@ services:
       - key: PORT
         value: 5004
       - key: MONGO_URI
-        value: mongodb+srv://budgiehero_user:NczvUblCuPjcASwH@cluster0.ljvd4r7.mongodb.net/budgiehero/notification-test?retryWrites=true&w=majority&appName=Cluster0
+        value: mongodb+srv://budgiehero_user:NczvUblCuPjcASwH@cluster0.ljvd4r7.mongodb.net/budgiehero-test?retryWrites=true&w=majority&appName=Cluster0
     autoDeploy: true
     healthCheckPath: /notification/health
 
@@ -164,6 +164,6 @@ services:
       - key: PORT
         value: 5004
       - key: MONGO_URI
-        value: mongodb+srv://budgiehero_user:NczvUblCuPjcASwH@cluster0.ljvd4r7.mongodb.net/budgiehero/notification?retryWrites=true&w=majority&appName=Cluster0
+        value: mongodb+srv://budgiehero_user:NczvUblCuPjcASwH@cluster0.ljvd4r7.mongodb.net/budgiehero?retryWrites=true&w=majority&appName=Cluster0
     autoDeploy: true
     healthCheckPath: /notification/health
