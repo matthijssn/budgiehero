@@ -1,7 +1,7 @@
 services:
   # === AUTH SERVICE ===
   - type: web
-    name: auth-service-test
+    name: budgiehero-auth-service-test
     env: node
     plan: free
     region: frankfurt
@@ -19,7 +19,7 @@ services:
     healthCheckPath: /auth/login
 
   - type: web
-    name: auth-service-prod
+    name: budgiehero-auth-service-prod
     env: node
     plan: free
     region: frankfurt
@@ -38,7 +38,7 @@ services:
 
   # === BUDGET SERVICE ===
   - type: web
-    name: budget-service-test
+    name: budgiehero-budget-service-test
     env: node
     plan: free
     region: frankfurt
@@ -54,7 +54,7 @@ services:
     healthCheckPath: /budget/health
 
   - type: web
-    name: budget-service-prod
+    name: budgiehero-budget-service-prod
     env: node
     plan: free
     region: frankfurt
@@ -71,7 +71,7 @@ services:
 
   # === TRANSACTION SERVICE ===
   - type: web
-    name: transaction-service-test
+    name: budgiehero-transaction-service-test
     env: node
     plan: free
     region: frankfurt
@@ -83,4 +83,88 @@ services:
         value: 5002
       - key: MONGO_URI
         value: mongodb+srv://budgiehero_user:NczvUblCuPjcASwH@cluster0.ljvd4r7.mongodb.net/budgiehero/transaction-test?retryWrites=true&w=majority&appName=Cluster0
-   
+    autoDeploy: true
+    healthCheckPath: /transaction/health
+
+  - type: web
+    name: budgiehero-transaction-service-prod
+    env: node
+    plan: free
+    region: frankfurt
+    branch: main
+    buildCommand: "npm install"
+    startCommand: "npm start"
+    envVars:
+      - key: PORT
+        value: 5002
+      - key: MONGO_URI
+        value: mongodb+srv://budgiehero_user:NczvUblCuPjcASwH@cluster0.ljvd4r7.mongodb.net/budgiehero/transaction?retryWrites=true&w=majority&appName=Cluster0
+    autoDeploy: true
+    healthCheckPath: /transaction/health
+
+  # === REPORTING SERVICE ===
+  - type: web
+    name: budgiehero-reporting-service-test
+    env: node
+    plan: free
+    region: frankfurt
+    branch: develop
+    buildCommand: "npm install"
+    startCommand: "npm start"
+    envVars:
+      - key: PORT
+        value: 5003
+      - key: MONGO_URI
+        value: mongodb+srv://budgiehero_user:NczvUblCuPjcASwH@cluster0.ljvd4r7.mongodb.net/budgiehero/reporting-test?retryWrites=true&w=majority&appName=Cluster0
+    autoDeploy: true
+    healthCheckPath: /reporting/health
+
+  - type: web
+    name: budgiehero-reporting-service-prod
+    env: node
+    plan: free
+    region: frankfurt
+    branch: main
+    buildCommand: "npm install"
+    startCommand: "npm start"
+    envVars:
+      - key: PORT
+        value: 5003
+      - key: MONGO_URI
+        value: mongodb+srv://budgiehero_user:NczvUblCuPjcASwH@cluster0.ljvd4r7.mongodb.net/budgiehero/reporting?retryWrites=true&w=majority&appName=Cluster0
+    autoDeploy: true
+    healthCheckPath: /reporting/health
+
+  # === NOTIFICATION SERVICE ===
+  - type: web
+    name: budgiehero-notification-service-test
+    env: node
+    plan: free
+    region: frankfurt
+    branch: develop
+    buildCommand: "npm install"
+    startCommand: "npm start"
+    envVars:
+      - key: PORT
+        value: 5004
+      - key: MONGO_URI
+        value: mongodb+srv://budgiehero_user:NczvUblCuPjcASwH@cluster0.ljvd4r7.mongodb.net/budgiehero/notification-test?retryWrites=true&w=majority&appName=Cluster0
+    autoDeploy: true
+    healthCheckPath: /notification/health
+
+  - type: web
+    name: budgiehero-notification-service-prod
+    env: node
+    plan: free
+    region: frankfurt
+    branch: main
+    buildCommand: "npm install"
+    startCommand: "npm start"
+    envVars:
+      - key: PORT
+        value: 5004
+      - key: MONGO_URI
+        value: mongodb+srv://budgiehero_user:NczvUblCuPjcASwH@cluster0.ljvd4r7.mongodb.net/budgiehero/notification?retryWrites=true&w=majority&appName=Cluster0
+    autoDeploy: true
+    healthCheckPath: /notification/health
+``
