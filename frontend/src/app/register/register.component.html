@@ -1,0 +1,21 @@
+<mat-card>
+    <h2>Registreren</h2>
+    <form>
+      <mat-form-field appearance="outline">
+        <mat-label>Naam</mat-label>
+        <input matInput [(ngModel)]="name" />
+      </mat-form-field>
+  
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput [(ngModel)]="email" type="email" />
+      </mat-form-field>
+  
+      <mat-form-field appearance="outline">
+        <mat-label>Password</mat-label>
+        <input matInput [(ngModel)]="password" type="password" />
+      </mat-form-field>
+  
+      <button mat-raised-button color="primary" (click)="register()">Registreren</button>
+    </form>
+  </mat-card>
