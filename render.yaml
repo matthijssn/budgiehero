@@ -5,9 +5,9 @@ services:
     env: node
     plan: free
     region: frankfurt
-    branch: develop
-    buildCommand: "npm install"
-    startCommand: "npm start"
+    branch: develop    
+    buildCommand: "cd backend/auth-service && npm install"
+    startCommand: "cd backend/auth-service && npm start"
     envVars:
       - key: PORT
         value: 5000
@@ -23,9 +23,9 @@ services:
     env: node
     plan: free
     region: frankfurt
-    branch: main
-    buildCommand: "npm install"
-    startCommand: "npm start"
+    branch: main    
+    buildCommand: "cd backend/auth-service && npm install"
+    startCommand: "cd backend/auth-service && npm start"
     envVars:
       - key: PORT
         value: 5000
