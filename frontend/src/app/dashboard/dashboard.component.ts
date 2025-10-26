@@ -20,5 +20,5 @@ export class DashboardComponent {
   ];
 
   view: [number, number] = [400, 300];
-  colorScheme = { domain: ['#42A5F5', '#66BB6A', '#FFA726', '#AB47BC'] };
+  colorScheme = 'cool';
 }
