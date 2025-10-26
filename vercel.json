@@ -1,0 +1,18 @@
+{
+    "version": 2,
+    "builds": [
+      {
+        "src": "frontend/angular.json",
+        "use": "@vercel/static-build",
+        "config": {
+          "distDir": "frontend/dist/budgiehero-frontend"
+        }
+      }
+    ],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "/index.html"
+      }
+    ]
+  }
